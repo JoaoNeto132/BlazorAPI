@@ -1,0 +1,34 @@
+﻿@page "/chucknorris"
+@inject HttpClient Http
+@inject IToastService toastService
+@using Newtonsoft.Json
+
+<PageTitle>Chuck Norris</PageTitle>
+
+<button class="btn btn-info" @onclick="GetJoke">Pedir piada</button>
+<br /><br />
+@joke.value
+
+@code {
+    Joke joke = new Joke();
+
+    private async Task GetJoke()
+    {
+        using (var client = new HttpClient())
+            try
+            {
+                HttpResponseMessage resposta = await client.GetAsync("https://api.chucknorris.io/jokes/random");
+                string json = await resposta.Content.ReadAsStringAsync();
+                joke = JsonConvert.DeserializeObject<Joke>(json);
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError(ex.Message, "Erro ao buscar piada");
+            }
+    }
+
+    public class Joke
+    {
+        public string value { get; set; }
+    }
+}

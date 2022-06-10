@@ -1,0 +1,66 @@
+﻿@page "/cep"
+@using BlazorAPI.Shared.Features.Cep.Models
+@inject HttpClient Http
+@inject IToastService toastService
+
+<PageTitle>Cep</PageTitle>
+
+<div class="card" style="width: 600px;">
+    <div class="card-body">
+        <h5 class="card-title">Busca de endereço</h5>
+        <form class="row g-2" style="padding-top: 8px; padding-bottom: 15px;">
+            <div class="col-md-10">
+                <input @bind="endereco.cep" type="text" class="form-control" placeholder="Informe um cep" />
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="form-control btn-primary" @onclick="BuscarEnderecoPorCep">Buscar</button>
+            </div>
+            <div class="col-12">
+                <label for="txtLogradouro" class="form-label">Logradouro</label>
+                <input @bind="endereco.logradouro" type="text" class="form-control" id="txtLogradouro" />
+            </div>
+            <div class="col-6">
+                <label for="txtBairro" class="form-label">Bairro</label>
+                <input @bind="endereco.bairro" type="text" class="form-control" id="txtBairro" />
+            </div>
+            <div class="col-6">
+                <label for="txtComplemento" class="form-label">Complemento</label>
+                <input @bind="endereco.complemento" type="text" class="form-control" id="txtComplemento" />
+            </div>
+            <div class="col-8">
+                <label for="txtCidade" class="form-label">Cidade</label>
+                <input @bind="endereco.localidade" type="text" class="form-control" id="txtCidade" />
+            </div>
+            <div class="col-2">
+                <label for="txtUf" class="form-label">UF</label>
+                <input @bind="endereco.uf" type="text" class="form-control" id="txtUf" />
+            </div>
+            <div class="col-2">
+                <label for="txtDdd" class="form-label">DDD</label>
+                <input @bind="endereco.ddd" type="text" class="form-control" id="txtDdd" />
+            </div>
+        </form>
+        <a href="cep" @onclick="OnInitializedAsync" class="card-link">Limpar</a>
+    </div>
+</div>
+
+@code {
+    Endereco endereco { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        endereco = new Endereco();
+    }
+    private async Task BuscarEnderecoPorCep()
+    {
+        try
+        {
+            endereco = await Http.GetFromJsonAsync<Endereco>($"api/Cep/{endereco.cep}");
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Erro ao buscar cep");
+        }
+    }
+
+}
